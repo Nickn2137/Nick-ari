@@ -125,8 +125,7 @@ public class ModelImpl implements Model {
         if (r < 0 || r >= active.getHeight() || c < 0 || c >= active.getWidth()) {
             throw new IndexOutOfBoundsException("Out of bounds");
         }
-        boolean isLamp = lamps.stream().anyMatch(lamp -> lamp[0] == r && lamp[1] == c);
-        if (!isLamp) {
+        if (!isLamp(r, c)) {
             throw new IllegalArgumentException("Cell must contain a lamp");
         }
 
@@ -160,7 +159,7 @@ public class ModelImpl implements Model {
             throw new IndexOutOfBoundsException("Invalid index");
         }
         currentPuzzleIndex = index;
-        resetPuzzle();
+        lamps.clear();
         notifyObservers();
     }
 
