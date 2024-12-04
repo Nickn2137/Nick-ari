@@ -56,7 +56,7 @@ public class PuzzleImpl implements Puzzle {
     @Override
     public CellType getCellType(int r, int c) {
         if (r < 0 || r >= rows || c < 0 || c >= cols) {
-            throw new IllegalArgumentException("Invalid row or column index");
+      throw new IndexOutOfBoundsException("Invalid row or column index");
         }
         return grid[r][c];
     }
@@ -64,7 +64,7 @@ public class PuzzleImpl implements Puzzle {
     @Override
     public int getClue(int r, int c) {
         if (r < 0 || r >= rows || c < 0 || c >= cols) {
-            throw new IllegalArgumentException("Invalid row or column index");
+      throw new IndexOutOfBoundsException("Invalid row or column index");
         }
         return clueValues[r][c];
     }
