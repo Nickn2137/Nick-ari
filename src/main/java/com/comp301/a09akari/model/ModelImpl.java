@@ -58,6 +58,14 @@ public class ModelImpl implements Model {
     @Override
     public boolean isLit(int r, int c) {
         Puzzle active = getActivePuzzle();
+        if (r < 0 || r >= active.getHeight() || c < 0 || c >= active.getWidth()) {
+            throw new IndexOutOfBoundsException("Out of bounds");
+        }
+
+        if (active.getCellType(r, c) != CellType.CORRIDOR) {
+            throw new IllegalArgumentException("Must be a corridor");
+        }
+
         if (active.getCellType(r, c) == CellType.WALL || active.getCellType(r, c) == CellType.CLUE) {
             return false;
         }
@@ -120,7 +128,7 @@ public class ModelImpl implements Model {
         if (active.getCellType(r, c) != CellType.CORRIDOR) {
             throw new IllegalArgumentException("Must be a corridor");
         }
-        return lamps.stream().anyMatch(lamp -> lamp[0] == r && lamp[1] == c);
+        return lamps.stream().anyMatch(loc -> loc[0] == r && loc[1] == c);
     }
 
     @Override
