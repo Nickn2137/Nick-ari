@@ -32,6 +32,10 @@ public class ModelImpl implements Model {
             throw new IllegalArgumentException("Must be a corridor");
         }
 
+        if (isLamp(r, c)) {
+            return;
+        }
+
         lamps.add(new int[]{r, c});
         notifyObservers();
     }
@@ -159,8 +163,7 @@ public class ModelImpl implements Model {
             throw new IndexOutOfBoundsException("Invalid index");
         }
         currentPuzzleIndex = index;
-        lamps.clear();
-        notifyObservers();
+        resetPuzzle();
     }
 
     @Override
