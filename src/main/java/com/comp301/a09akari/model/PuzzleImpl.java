@@ -64,7 +64,10 @@ public class PuzzleImpl implements Puzzle {
     @Override
     public int getClue(int r, int c) {
         if (r < 0 || r >= rows || c < 0 || c >= cols) {
-      throw new IndexOutOfBoundsException("Invalid row or column index");
+            throw new IndexOutOfBoundsException("Invalid row or column index");
+        }
+        if (getCellType(r, c) != CellType.CLUE) {
+            throw new IllegalArgumentException("Must be a clue");
         }
         return clueValues[r][c];
     }
