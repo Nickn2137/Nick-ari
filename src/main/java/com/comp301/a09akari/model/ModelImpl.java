@@ -94,7 +94,6 @@ public class ModelImpl implements Model {
 
     private boolean clearPath(int r1, int c1, int r2, int c2) {
         Puzzle active = getActivePuzzle();
-
         if (r1 == r2) {
             int start = Math.min(c1, c2);
             int end = Math.max(c1, c2);
@@ -143,12 +142,16 @@ public class ModelImpl implements Model {
 
         for (int col = 0; col < active.getWidth(); col++) {
             if (col != c && isLamp(r, col)) {
-                return true;
+                if (clearPath(r, c, r, col)) {
+                    return true;
+                }
             }
         }
         for (int row = 0; row < active.getHeight(); row++) {
             if (row != r && isLamp(row, c)) {
-                return true;
+                if (clearPath(r, c, row, c)) {
+                    return true;
+                }
             }
         }
         return false;
