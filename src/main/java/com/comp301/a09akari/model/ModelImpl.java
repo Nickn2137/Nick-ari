@@ -125,7 +125,8 @@ public class ModelImpl implements Model {
         if (r < 0 || r >= active.getHeight() || c < 0 || c >= active.getWidth()) {
             throw new IndexOutOfBoundsException("Out of bounds");
         }
-        if (!isLamp(r, c)) {
+        boolean isLamp = lamps.stream().anyMatch(lamp -> lamp[0] == r && lamp[1] == c);
+        if (!isLamp) {
             throw new IllegalArgumentException("Cell must contain a lamp");
         }
 
