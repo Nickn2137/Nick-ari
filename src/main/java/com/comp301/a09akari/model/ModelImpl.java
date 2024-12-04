@@ -25,7 +25,7 @@ public class ModelImpl implements Model {
     public void addLamp(int r, int c) {
         Puzzle active = getActivePuzzle();
         if (r < 0 || r >= active.getHeight() || c < 0 || c >= active.getWidth()) {
-            throw new IllegalArgumentException("Out of bounds");
+            throw new IndexOutOfBoundsException("Out of bounds");
         }
 
         if (active.getCellType(r, c) != CellType.CORRIDOR) {
@@ -40,7 +40,7 @@ public class ModelImpl implements Model {
     public void removeLamp(int r, int c) {
         Puzzle active = getActivePuzzle();
         if (r < 0 || r >= active.getHeight() || c < 0 || c >= active.getWidth()) {
-            throw new IllegalArgumentException("Out of bounds");
+            throw new IndexOutOfBoundsException("Out of bounds");
         }
 
         if (active.getCellType(r, c) != CellType.CORRIDOR) {
@@ -110,7 +110,7 @@ public class ModelImpl implements Model {
     public boolean isLamp(int r, int c) {
         Puzzle active = getActivePuzzle();
         if (r < 0 || r >= active.getHeight() || c < 0 || c >= active.getWidth()) {
-            throw new IllegalArgumentException("Out of bounds");
+            throw new IndexOutOfBoundsException("Out of bounds");
         }
 
         if (active.getCellType(r, c) != CellType.CORRIDOR) {
@@ -123,7 +123,7 @@ public class ModelImpl implements Model {
     public boolean isLampIllegal(int r, int c) {
         Puzzle active = getActivePuzzle();
         if (r < 0 || r >= active.getHeight() || c < 0 || c >= active.getWidth()) {
-            throw new IllegalArgumentException("Out of bounds");
+            throw new IndexOutOfBoundsException("Out of bounds");
         }
         if (!isLamp(r, c)) {
             throw new IllegalArgumentException("Cell must contain a lamp");
@@ -204,7 +204,7 @@ public class ModelImpl implements Model {
     public boolean isClueSatisfied(int r, int c) {
         Puzzle active = getActivePuzzle();
         if (r < 0 || r >= active.getHeight() || c < 0 || c >= active.getWidth()) {
-            throw new IllegalArgumentException("Out of bounds");
+            throw new IndexOutOfBoundsException("Out of bounds");
         }
         if (active.getCellType(r, c) != CellType.CLUE) {
             throw new IllegalArgumentException("Must be a clue cell");
