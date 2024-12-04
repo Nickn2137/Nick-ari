@@ -141,11 +141,13 @@ public class ModelImpl implements Model {
             throw new IllegalArgumentException("Cell must contain a lamp");
         }
 
-        for (int[] lamp : lamps) {
-            if (lamp[0] == r && lamp[1] != c) {
+        for (int col = 0; col < active.getWidth(); col++) {
+            if (col != c && isLamp(r, col)) {
                 return true;
             }
-            if (lamp[1] == c && lamp[0] != r) {
+        }
+        for (int row = 0; row < active.getHeight(); row++) {
+            if (row != r && isLamp(row, c)) {
                 return true;
             }
         }
