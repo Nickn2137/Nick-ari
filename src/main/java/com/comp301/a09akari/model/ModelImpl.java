@@ -79,19 +79,19 @@ public class ModelImpl implements Model {
 
     private boolean litPath(int r1, int c1, int r2, int c2) {
         Puzzle active = getActivePuzzle();
-        int x = r1 + r2;
-        int y = c1 + c2;
+        int newR = r1 + r2;
+        int newC = c1 + c2;
 
-        while (x >= 0 && x < active.getHeight() && y >= 0 && y < active.getWidth()) {
-            CellType cellType = active.getCellType(x, y);
+        while (newR >= 0 && newR < active.getHeight() && newC >= 0 && newC < active.getWidth()) {
+            CellType cellType = active.getCellType(newR, newC);
             if (cellType == CellType.WALL || cellType == CellType.CLUE) {
                 break;
             }
-            if (isLamp(x, y)) {
+            if (isLamp(newR, newC)) {
                 return true;
             }
-            x += r2;
-            y += c2;
+            newR += r2;
+            newC += c2;
         }
         return false;
     }
@@ -197,8 +197,12 @@ public class ModelImpl implements Model {
             int newR = r + dir[0];
             int newC = c + dir[1];
 
-            if (newR > 0 && newR < active.getHeight() && newC >= 0 && newC < active.getWidth() && isLamp(newR, newC)) {
-                adjacentLamps++;
+            if (newR > 0 && newR < active.getHeight() && newC >= 0 && newC < active.getWidth()) {
+                CellType dummy = active.getCellType(newR, newC);
+
+                if (isLamp(newR, newC) && dummy == CellType.CORRIDOR) {
+                    adjacentLamps++;
+                }
             }
         }
         return adjacentLamps == expectedLamps;
