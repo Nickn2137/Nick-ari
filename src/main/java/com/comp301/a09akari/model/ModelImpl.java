@@ -74,45 +74,24 @@ public class ModelImpl implements Model {
             return true;
         }
 
-        for (int col = 0; col < active.getWidth(); col++) {
-            if (col != c && isLamp(r, col)) {
-                if (clearPath(r, c, r, col)) {
-                    return true;
-                }
-            }
-        }
-
-        for (int row = 0; row < active.getHeight(); row++) {
-            if (row != r && isLamp(row, c)) {
-                if (clearPath(r, c, row, c)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return litPath(r, c, 0, 1) || litPath(r, c, 0, -1) || litPath(r, c, 1, 0) || litPath(r, c, -1, 0);
     }
 
-    private boolean clearPath(int r1, int c1, int r2, int c2) {
+    private boolean litPath(int r1, int c1, int r2, int c2) {
         Puzzle active = getActivePuzzle();
-        if (r1 == r2) {
-            int start = Math.min(c1, c2);
-            int end = Math.max(c1, c2);
-            for (int c = start + 1; c < end; c++) {
-                if (active.getCellType(r1, c) != CellType.CORRIDOR) {
-                    return false;
-                }
+        int x = r1 + r2;
+        int y = c1 + c2;
+
+        while (x >= 0 && x < active.getHeight() && y >= 0 && y < active.getWidth()) {
+            CellType cellType = active.getCellType(x, y);
+            if (cellType == CellType.WALL || cellType == CellType.CLUE) {
+                break;
             }
-            return true;
-        }
-        if (c1 == c2) {
-            int start = Math.min(r1, r2);
-            int end = Math.max(r1, r2);
-            for (int r = start + 1; r < end; r++) {
-                if (active.getCellType(r, c1) != CellType.CORRIDOR) {
-                    return false;
-                }
+            if (isLamp(x, y)) {
+                return true;
             }
-            return true;
+            x += r2;
+            y += c2;
         }
         return false;
     }
@@ -140,21 +119,7 @@ public class ModelImpl implements Model {
             throw new IllegalArgumentException("Cell must contain a lamp");
         }
 
-        for (int col = 0; col < active.getWidth(); col++) {
-            if (col != c && isLamp(r, col)) {
-                if (clearPath(r, c, r, col)) {
-                    return true;
-                }
-            }
-        }
-        for (int row = 0; row < active.getHeight(); row++) {
-            if (row != r && isLamp(row, c)) {
-                if (clearPath(r, c, row, c)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return litPath(r, c, 0, 1) || litPath(r, c, 0, -1) || litPath(r, c, 1, 0) || litPath(r, c, -1, 0);
     }
 
 
