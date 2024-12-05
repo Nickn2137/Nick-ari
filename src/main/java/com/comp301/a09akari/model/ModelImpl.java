@@ -197,12 +197,8 @@ public class ModelImpl implements Model {
             int newR = r + dir[0];
             int newC = c + dir[1];
 
-            if (newR > 0 && newR < active.getHeight() && newC >= 0 && newC < active.getWidth()) {
-                CellType dummy = active.getCellType(newR, newC);
-
-                if (isLamp(newR, newC) && dummy == CellType.CORRIDOR) {
-                    adjacentLamps++;
-                }
+            if (newR >= 0 && newR < active.getHeight() && newC >= 0 && newC < active.getWidth() && isLamp(newR, newC)) {
+                adjacentLamps++;
             }
         }
         return adjacentLamps == expectedLamps;
