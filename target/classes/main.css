@@ -5,3 +5,4 @@
  * JavaFX start() method:
  *   scene.getStylesheets().add("main.css");
  */
+.root {-fx-background-color: #111010;}
