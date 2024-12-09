@@ -107,6 +107,7 @@ public class ModelImpl implements Model {
     }
 
     if (active.getCellType(r, c) != CellType.CORRIDOR) {
+      System.out.println("Invalid cell for isLamp: (" + r + ", " + c + ") - Type: " + active.getCellType(r, c));
       throw new IllegalArgumentException("Must be a corridor");
     }
     return lamps.stream().anyMatch(lamp -> lamp[0] == r && lamp[1] == c);
@@ -144,7 +145,20 @@ public class ModelImpl implements Model {
       throw new IndexOutOfBoundsException("Invalid index");
     }
     currentPuzzleIndex = index;
+    validatePuzzle(getActivePuzzle());
     resetPuzzle();
+    notifyObservers();
+  }
+
+  private void validatePuzzle(Puzzle puzzle) {
+    for (int r = 0; r < puzzle.getHeight(); r++) {
+      for (int c = 0; c < puzzle.getWidth(); c++) {
+        CellType type = puzzle.getCellType(r, c);
+        if (type != CellType.CORRIDOR && type != CellType.WALL && type != CellType.CLUE) {
+          throw new IllegalStateException("Invalid cell type in puzzle: " + type);
+        }
+      }
+    }
   }
 
   @Override

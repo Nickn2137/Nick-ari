@@ -5,7 +5,7 @@ import com.comp301.a09akari.model.Model;
 import java.util.Random;
 
 public class ControllerImpl implements ClassicMvcController {
-  private Model model;
+  private final Model model;
 
   public ControllerImpl(Model model) {
     if (model == null) {
@@ -19,23 +19,18 @@ public class ControllerImpl implements ClassicMvcController {
     int currentIndex = model.getActivePuzzleIndex();
     int librarySize = model.getPuzzleLibrarySize();
 
-    if (currentIndex < librarySize - 1) {
+    if (currentIndex != librarySize - 1) {
       model.setActivePuzzleIndex(currentIndex + 1);
-    } else {
-      model.setActivePuzzleIndex(0);
     }
   }
 
   @Override
   public void clickPrevPuzzle() {
     int currentIndex = model.getActivePuzzleIndex();
-    int librarySize = model.getPuzzleLibrarySize();
 
-    if (currentIndex > 0) {
+    if (currentIndex != 0) {
       model.setActivePuzzleIndex(currentIndex - 1);
-    } else {
-      model.setActivePuzzleIndex(librarySize - 1);
-    }
+      }
   }
 
   @Override
@@ -49,6 +44,9 @@ public class ControllerImpl implements ClassicMvcController {
     while (randomIndex == currentIndex) {
       randomIndex = random.nextInt(librarySize);
     }
+
+    System.out.println("Intended Index at Rand: " + randomIndex);
+
     model.setActivePuzzleIndex(randomIndex);
   }
 
@@ -59,10 +57,14 @@ public class ControllerImpl implements ClassicMvcController {
 
   @Override
   public void clickCell(int r, int c) {
-    if (model.isLamp(r, c)) {
-      model.removeLamp(r, c);
-    } else {
-      model.addLamp(r, c);
+    try {
+      if (model.isLamp(r, c)) {
+        model.removeLamp(r, c);
+      } else {
+        model.addLamp(r, c);
+      }
+    } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+      System.out.println("Invalid cell click: " + e.getMessage());
     }
   }
 }
