@@ -1,4 +1,4 @@
-# NICK-ari 
+# NICKARI
 
 ## Demo
 
