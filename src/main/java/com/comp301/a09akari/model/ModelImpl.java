@@ -1,14 +1,14 @@
 package com.comp301.a09akari.model;
 
+import javafx.scene.control.Cell;
+
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ModelImpl implements Model {
   private final PuzzleLibrary library;
   private int currentPuzzleIndex;
-  private final Set<int[]> lamps;
+  private int[][] lamps;
   private final List<ModelObserver> observers;
 
   public ModelImpl(PuzzleLibrary library) {
@@ -17,7 +17,9 @@ public class ModelImpl implements Model {
     }
     this.library = library;
     this.currentPuzzleIndex = 0;
-    this.lamps = new HashSet<>();
+    this.lamps =
+        new int[library.getPuzzle(currentPuzzleIndex).getHeight()]
+            [library.getPuzzle(currentPuzzleIndex).getWidth()];
     this.observers = new ArrayList<>();
   }
 
@@ -32,11 +34,8 @@ public class ModelImpl implements Model {
       throw new IllegalArgumentException("Must be a corridor");
     }
 
-    if (isLamp(r, c)) {
-      return;
-    }
+    lamps[r][c] = 1;
 
-    lamps.add(new int[] {r, c});
     notifyObservers();
   }
 
@@ -51,7 +50,7 @@ public class ModelImpl implements Model {
       throw new IllegalArgumentException("Must be a corridor");
     }
 
-    lamps.removeIf(lamp -> lamp[0] == r && lamp[1] == c);
+    lamps[r][c] = 0;
     notifyObservers();
   }
 
@@ -66,35 +65,41 @@ public class ModelImpl implements Model {
       throw new IllegalArgumentException("Must be a corridor");
     }
 
-    if (active.getCellType(r, c) == CellType.WALL || active.getCellType(r, c) == CellType.CLUE) {
-      return false;
-    }
-
     if (isLamp(r, c)) {
       return true;
     }
 
-    return litPath(r, c, 0, 1)
-        || litPath(r, c, 0, -1)
-        || litPath(r, c, 1, 0)
-        || litPath(r, c, -1, 0);
-  }
-
-  private boolean litPath(int r1, int c1, int r2, int c2) {
-    Puzzle active = getActivePuzzle();
-    int newR = r1 + r2;
-    int newC = c1 + c2;
-
-    while (newR >= 0 && newR < active.getHeight() && newC >= 0 && newC < active.getWidth()) {
-      CellType cellType = active.getCellType(newR, newC);
-      if (cellType == CellType.WALL || cellType == CellType.CLUE) {
+    for (int i = r - 1; i >= 0; i--) {
+      if (active.getCellType(i, c) == CellType.WALL || active.getCellType(i, c) == CellType.CLUE) {
         break;
       }
-      if (isLamp(newR, newC)) {
+      if (isLamp(i, c)) {
         return true;
       }
-      newR += r2;
-      newC += c2;
+    }
+    for (int i = r + 1; i < active.getHeight(); i++) {
+      if (active.getCellType(i, c) == CellType.WALL || active.getCellType(i, c) == CellType.CLUE) {
+        break;
+      }
+      if (isLamp(i, c)) {
+        return true;
+      }
+    }
+    for (int i = c - 1; i >= 0; i--) {
+      if (active.getCellType(r, i) == CellType.WALL || active.getCellType(r, i) == CellType.CLUE) {
+        break;
+      }
+      if (isLamp(r, i)) {
+        return true;
+      }
+    }
+    for (int i = c + 1; i < active.getWidth(); i++) {
+      if (active.getCellType(r, i) == CellType.WALL || active.getCellType(r, i) == CellType.CLUE) {
+        break;
+      }
+      if (isLamp(r, i)) {
+        return true;
+      }
     }
     return false;
   }
@@ -107,10 +112,9 @@ public class ModelImpl implements Model {
     }
 
     if (active.getCellType(r, c) != CellType.CORRIDOR) {
-      System.out.println("Invalid cell for isLamp: (" + r + ", " + c + ") - Type: " + active.getCellType(r, c));
       throw new IllegalArgumentException("Must be a corridor");
     }
-    return lamps.stream().anyMatch(lamp -> lamp[0] == r && lamp[1] == c);
+    return lamps[r][c] == 1;
   }
 
   @Override
@@ -119,14 +123,43 @@ public class ModelImpl implements Model {
     if (r < 0 || r >= active.getHeight() || c < 0 || c >= active.getWidth()) {
       throw new IndexOutOfBoundsException("Out of bounds");
     }
-    if (!isLamp(r, c)) {
-      throw new IllegalArgumentException("Cell must contain a lamp");
+    if (active.getCellType(r, c) != CellType.CORRIDOR) {
+      throw new IllegalArgumentException("Must be a corridor");
     }
 
-    return litPath(r, c, 0, 1)
-        || litPath(r, c, 0, -1)
-        || litPath(r, c, 1, 0)
-        || litPath(r, c, -1, 0);
+    for (int i = r - 1; i >= 0; i--) {
+      if (active.getCellType(i, c) == CellType.WALL || active.getCellType(i, c) == CellType.CLUE) {
+        break;
+      }
+      if (isLamp(i, c)) {
+        return true;
+      }
+    }
+    for (int i = r + 1; i < active.getHeight(); i++) {
+      if (active.getCellType(i, c) == CellType.WALL || active.getCellType(i, c) == CellType.CLUE) {
+        break;
+      }
+      if (isLamp(i, c)) {
+        return true;
+      }
+    }
+    for (int i = c - 1; i >= 0; i--) {
+      if (active.getCellType(r, i) == CellType.WALL || active.getCellType(r, i) == CellType.CLUE) {
+        break;
+      }
+      if (isLamp(r, i)) {
+        return true;
+      }
+    }
+    for (int i = c + 1; i < active.getWidth(); i++) {
+      if (active.getCellType(r, i) == CellType.WALL || active.getCellType(r, i) == CellType.CLUE) {
+        break;
+      }
+      if (isLamp(r, i)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
@@ -145,20 +178,7 @@ public class ModelImpl implements Model {
       throw new IndexOutOfBoundsException("Invalid index");
     }
     currentPuzzleIndex = index;
-    validatePuzzle(getActivePuzzle());
     resetPuzzle();
-    notifyObservers();
-  }
-
-  private void validatePuzzle(Puzzle puzzle) {
-    for (int r = 0; r < puzzle.getHeight(); r++) {
-      for (int c = 0; c < puzzle.getWidth(); c++) {
-        CellType type = puzzle.getCellType(r, c);
-        if (type != CellType.CORRIDOR && type != CellType.WALL && type != CellType.CLUE) {
-          throw new IllegalStateException("Invalid cell type in puzzle: " + type);
-        }
-      }
-    }
   }
 
   @Override
@@ -168,7 +188,8 @@ public class ModelImpl implements Model {
 
   @Override
   public void resetPuzzle() {
-    lamps.clear();
+    Puzzle current = library.getPuzzle(currentPuzzleIndex);
+    lamps = new int[current.getHeight()][current.getWidth()];
     notifyObservers();
   }
 
@@ -178,21 +199,19 @@ public class ModelImpl implements Model {
 
     for (int r = 0; r < active.getHeight(); r++) {
       for (int c = 0; c < active.getWidth(); c++) {
-        if (active.getCellType(r, c) == CellType.CORRIDOR && !isLit(r, c)) {
+        if (active.getCellType(r, c) == CellType.CORRIDOR) {
+          if (!isLit(r, c)) {
           return false;
-        }
-      }
-    }
-    for (int r = 0; r < active.getHeight(); r++) {
-      for (int c = 0; c < active.getWidth(); c++) {
-        if (active.getCellType(r, c) == CellType.CLUE && !isClueSatisfied(r, c)) {
+          }
+          if (isLamp(r, c) && isLampIllegal(r, c)) {
           return false;
+          }
         }
-      }
-    }
-    for (int[] lamp : lamps) {
-      if (isLampIllegal(lamp[0], lamp[1])) {
-        return false;
+        if (active.getCellType(r, c) == CellType.CLUE) {
+          if (!isClueSatisfied(r, c)) {
+            return false;
+          }
+        }
       }
     }
     return true;
@@ -210,28 +229,24 @@ public class ModelImpl implements Model {
     int expectedLamps = active.getClue(r, c);
     int adjacentLamps = 0;
 
-    int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-
-    for (int[] dir : directions) {
-      int newR = r + dir[0];
-      int newC = c + dir[1];
-
-      if (newR >= 0
-          && newR < active.getHeight()
-          && newC >= 0
-          && newC < active.getWidth()
-          && isLamp(newR, newC)) {
-        adjacentLamps++;
-      }
+    if (r > 0 && active.getCellType(r -1, c) == CellType.CORRIDOR && isLamp(r - 1, c)) {
+      adjacentLamps++;
+    }
+    if (r < active.getHeight() - 1 && active.getCellType(r + 1, c) == CellType.CORRIDOR && isLamp(r + 1, c)) {
+      adjacentLamps++;
+    }
+    if (c > 0 && active.getCellType(r, c - 1) == CellType.CORRIDOR && isLamp(r, c - 1)) {
+      adjacentLamps++;
+    }
+    if (c < active.getWidth() - 1 && active.getCellType(r, c + 1) == CellType.CORRIDOR && isLamp(r, c + 1)) {
+      adjacentLamps++;
     }
     return adjacentLamps == expectedLamps;
   }
 
   @Override
   public void addObserver(ModelObserver observer) {
-    if (observers != null && !observers.contains(observer)) {
-      observers.add(observer);
-    }
+    observers.add(observer);
   }
 
   @Override

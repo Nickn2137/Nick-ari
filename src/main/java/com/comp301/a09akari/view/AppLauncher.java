@@ -30,7 +30,7 @@ public class AppLauncher extends Application {
 
     OneView view = new OneView(model, controller);
 
-    Scene scene = new Scene(view.render(), 500, 500);
+    Scene scene = new Scene(view.render(), 650, 650);
     scene.getStylesheets().add("main.css");
     stage.setScene(scene);
 
